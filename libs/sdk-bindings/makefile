@@ -30,9 +30,12 @@ ios-universal: $(SOURCES)
 darwin-universal: $(SOURCES)
 	mkdir -p ../target/darwin-universal/release
 	cargo lipo --release --targets aarch64-apple-darwin
-	cargo lipo --release --targets x86_64-apple-darwin
-	lipo -create -output ../target/darwin-universal/release/libbreez_sdk_bindings.dylib ../target/aarch64-apple-darwin/release/libbreez_sdk_bindings.dylib ../target/x86_64-apple-darwin/release/libbreez_sdk_bindings.dylib
-	lipo -create -output ../target/darwin-universal/release/libbreez_sdk_bindings.a ../target/aarch64-apple-darwin/release/libbreez_sdk_bindings.a ../target/x86_64-apple-darwin/release/libbreez_sdk_bindings.a
+	@if [ $$(uname -m) != "arm64" ] ; then \
+		cargo lipo --release --targets x86_64-apple-darwin ; \
+		EXTRA_FLAGS="../target/x86_64-apple-darwin/release/libbreez_sdk_bindings.dylib ../target/x86_64-apple-darwin/release/libbreez_sdk_bindings.a" ; \
+	fi
+	lipo -create -output ../target/darwin-universal/release/libbreez_sdk_bindings.dylib ../target/aarch64-apple-darwin/release/libbreez_sdk_bindings.dylib $$EXTRA_FLAGS
+	lipo -create -output ../target/darwin-universal/release/libbreez_sdk_bindings.a ../target/aarch64-apple-darwin/release/libbreez_sdk_bindings.a $$EXTRA_FLAGS
 
 csharp-darwin: darwin-universal
 	cargo install uniffi-bindgen-cs --git https://github.com/breez/uniffi-bindgen-cs --branch namespace

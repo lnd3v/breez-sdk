@@ -53,9 +53,9 @@ target/aarch64-apple-ios-sim/debug/libbreez-sdk.a: $(SOURCES) ndk-home
 macos: x86_64-apple-darwin aarch64-apple-darwin
 
 x86_64-apple-darwin: $(SOURCES)
-	@if [ $$(uname) == "Darwin" ] ; then \
+	@if [ $$(uname) == "Darwin" ] && [ $$(uname -m) != "arm64" ] ; then \
 		cargo lipo --release --targets x86_64-apple-darwin ; \
-		else echo "Skipping macOS compilation on $$(uname)" ; \
+		else echo "Skipping x86_64-apple-darwin compilation on $$(uname)" ; \
 	fi
 	@echo "[DONE] $@"
 
